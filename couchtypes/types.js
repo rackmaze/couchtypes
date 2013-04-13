@@ -11,10 +11,9 @@
  */
 
 var utils = require('./utils'),
-    db = require('db'),
+    //db = require('db'),
     fields = require('couchtypes/fields'),
     fieldset = require('couchtypes/fieldset'),
-    widgets = require('couchtypes/widgets'),
     permissions = require('couchtypes/permissions'),
     _ = require('underscore')._;
 
@@ -51,7 +50,6 @@ var Type = exports.Type = function Type(name, options) {
     f._id = fields.string({
         omit_empty: true,
         required: false,
-        widget: widgets.hidden(),
         permissions: {
             update: permissions.fieldUneditable()
         },
@@ -61,17 +59,14 @@ var Type = exports.Type = function Type(name, options) {
     });
     f._rev = fields.string({
         omit_empty: true,
-        required: false,
-        widget: widgets.hidden()
+        required: false
     });
     f._deleted = fields.boolean({
         omit_empty: true,
-        required: false,
-        widget: widgets.hidden()
+        required: false
     });
     f.type = fields.string({
         default_value: name,
-        widget: widgets.hidden(),
         validators: [
             function (doc, val, raw) {
                 if (val !== name) {
@@ -276,7 +271,6 @@ exports.reference = function (options) {
             ref: fields.string({
                 omit_empty: true,
                 required: !!options.required,
-                widget: widgets.hidden(),
                 permissions: {},
                 default_value: function (req) {
                     return undefined;
@@ -308,7 +302,6 @@ exports.uniqueReference = function (options) {
     type.fields._id = fields.string({
         omit_empty: true,
         required: !!options.required,
-        widget: widgets.hidden(),
         permissions: {},
         default_value: function (req) {
             return req.uuid;

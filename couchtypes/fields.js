@@ -12,7 +12,6 @@
 
 var permissions = require('couchtypes/permissions'),
     validators = require('couchtypes/validators'),
-    widgets = require('couchtypes/widgets'),
     utils = require('couchtypes/utils'),
     _ = require('underscore')._;
 
@@ -38,7 +37,6 @@ var permissions = require('couchtypes/permissions'),
 
 var Field = exports.Field = function Field(options) {
     _.extend(this, _.defaults(options || {}, {
-        widget: widgets.text(),
         omit_empty: false,
         permissions: {},
         validators: [],
@@ -418,7 +416,7 @@ EmbeddedList.prototype.validate = function (doc, value, raw) {
             incorrectly returns false. We suspect an interpreter bug.
             Please revisit this using a CouchDB linked against js-1.8.5.
             We don't currently have the infrastructure for a test case. */
-        
+
         /* Before: return !(v instanceof Object) || _.isArray(v); */
         return (typeof(v) !== 'object' || _.isArray(v));
     });
@@ -562,7 +560,6 @@ exports.string = function (options) {
 
 exports.password = function (options) {
     return new Field(_.defaults((options || {}), {
-        widget: widgets.password(),
         parse: function (raw) {
             if (raw === null || raw === undefined) {
                 return '';
@@ -607,7 +604,6 @@ exports.number = function (options) {
 
 exports.boolean = function (options) {
     return new Field(_.defaults((options || {}), {
-        widget: widgets.checkbox(),
         required: false,
         parse: Boolean
     }));
@@ -676,7 +672,6 @@ exports.creator = function (options) {
     }
     return exports.string(_.defaults(options, {
         required: false,
-        widget: widgets.creator(),
         default_value: function (req) {
             return (req.userCtx && req.userCtx.name) || '';
         }
@@ -708,7 +703,6 @@ exports.createdTime = function (options) {
         p.update = permissions.fieldUneditable();
     }
     return exports.number(_.defaults(options, {
-        widget: widgets.computed(),
         default_value: function (req) {
             return new Date().getTime();
         }
@@ -743,9 +737,7 @@ exports.choice = function (options) {
     options.values = _.map(options.values, function (v) {
         return _.isArray(v) ? v: [v, v];
     });
-    return new Field(_.defaults(options, {
-        widget: widgets.select({values: options.values})
-    }));
+    return new Field(options);
 };
 
 
@@ -786,12 +778,7 @@ exports.numberChoice = function (options) {
  */
 
 exports.embed = function (options) {
-    return new Embedded(_.defaults((options || {}), {
-        widget: widgets.embedList({
-            singleton: true,
-            widget: widgets.defaultEmbedded()
-        })
-    }));
+    return new Embedded(options || {});
 };
 
 
@@ -806,12 +793,7 @@ exports.embed = function (options) {
  */
 
 exports.embedList = function (options) {
-    return new EmbeddedList(_.defaults((options || {}), {
-        widget: widgets.embedList({
-            singleton: false,
-            widget: widgets.defaultEmbedded()
-        })
-    }));
+    return new EmbeddedList(options || {});
 };
 
 
@@ -912,6 +894,5 @@ exports.AttachmentField.prototype = new exports.Field();
 
 exports.attachments = function (options) {
     options = options || {};
-    options.widget = options.widget || widgets.file();
     return new exports.AttachmentField(options);
 };

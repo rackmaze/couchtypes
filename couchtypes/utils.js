@@ -13,27 +13,6 @@ var _ = require('underscore')._;
 
 
 /**
- * Some functions calculate results differently depending on the execution
- * environment. The isBrowser value is used to set the correct environment
- * for these functions, and is only exported to make unit testing easier.
- */
-
-exports.isBrowser = function () {
-    return (typeof(window) !== 'undefined');
-};
-
-
-/**
- * A named empty function. Use this when you wish to take
- * no action for a callback or string-generating  function.
- */
-
-exports.emptyFunction = function ()
-{
-    return '';
-};
-
-/**
  * Traverses an object and its sub-objects using an array of property names.
  * Returns the value of the matched path, or undefined if the property does not
  * exist.
@@ -62,45 +41,6 @@ exports.getPropertyPath = function (obj, path) {
     return exports.getPropertyPath(obj[path[0]], path.slice(1));
 };
 
-/**
- * Traverses an object and its sub-objects using an array of property names.
- * Sets the value of the matched property.
- *
- * If a string if used for the path, it is assumed to be a path with a single
- * key (the given string).
- *
- * <pre>
- * setPropertyPath({}, ['a','b'], 'foo') -> {a: {b: 'foo'}}
- * setPropertyPath({}, 'a', 'foo') -> {a: 'foo'}
- * </pre>
- *
- * @name setPropertyPath(obj, path, val)
- * @param {Object} obj
- * @param {Array|String} path
- * @api public
- */
-
-exports.setPropertyPath = function (obj, path, val) {
-    if (!_.isArray(path)) {
-        path = [path];
-    }
-    if (!path.length) {
-        throw new Error('No property path given');
-    }
-    if (path.length === 1) {
-        obj[path[0]] = val;
-        return;
-    }
-    var next = path[0];
-    path = path.slice(1);
-    if (obj[next] === undefined) {
-        obj[next] = {};
-    }
-    else if (typeof obj[next] !== 'object' && path.length) {
-        throw new Error('Property path conflicts with existing value');
-    }
-    exports.setPropertyPath(obj[next], path, val);
-};
 
 /**
  * Call function with arguments, catch any errors and add to an array,
@@ -173,61 +113,6 @@ exports.parseCSV = function (csvString) {
         records.push(currentRecord);
     }
     return records;
-};
-
-/**
- * Tests if path b is equal to or a sub-path of a.
- *
- * @name isSubPath(a, b)
- * @param {Array} a
- * @param {Array} b
- * @returns {Boolean}
- * @api public
- */
-
-exports.isSubPath = function (a, b) {
-    for (var i = 0, len = a.length; i < len; i++) {
-        if (a[i] !== b[i]) {
-            return false;
-        }
-    }
-    return true;
-};
-
-/**
- * Return a title-case version of the supplied string.
- * @name titleize(str)
- * @param str The string to transform.
- * @returns {String}
- * @api public
- */
-
-exports.titleize = function (str) {
-    return (str || '').toLowerCase().replace(/_+/, ' ').replace(
-        /(?:^|\s+)\w/g, function (m) {
-            return m.toUpperCase();
-        }
-    );
-};
-
-/**
- * Returns a function that executes {closure} in the context of {context}.
- * Use this function if you'd like to preserve the current context
- * across callbacks, event handlers, and other cases where the value of
- * {this} is set for you. If you're coming from the Prototype framework,
- * this function is similar to bind() there.
- *
- * @name bindContext(context, closure)
- * @param {Object} context The context to use when executing closure.
- *          Usually, you will specify the current value of 'this'.
- * @param {Function} closure The function to to bind to {context}.
- * @api public
- */
-
-exports.bindContext = function (context, closure) {
-    return function () {
-        return closure.apply(context, arguments);
-    };
 };
 
 
