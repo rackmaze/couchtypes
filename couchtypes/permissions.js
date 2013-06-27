@@ -65,7 +65,8 @@ exports.hasRole = function (role) {
 exports.hasAnyOfTheRoles = function (expectedRoles) {
     return function (newDoc, oldDoc, newVal, oldVal, userCtx) {
         var actualRoles = userCtx ? (userCtx.roles || []): [];
-        if (_.intersect(expectedRoles, actualRoles).length === 0) {
+        var intersect = _.intersect || _.intersection;
+        if (intersect.call(_, expectedRoles, actualRoles).length === 0) {
             throw new Error('You must have the appropriate roles.');
         }
     };
