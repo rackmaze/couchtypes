@@ -579,7 +579,7 @@ exports.password = function (options) {
 
 exports.number = function (options) {
     options = prependValidator(options, function (doc, value) {
-        if (isNaN(value)) {
+        if (isNaN(value) || typeof value !== 'number') {
             throw new Error('Not a number');
         }
     });
@@ -752,7 +752,7 @@ exports.choice = function (options) {
 exports.numberChoice = function (options) {
     options = options || {};
     prependValidator(options, function (doc, value) {
-        if (isNaN(value)) {
+        if (isNaN(value) || typeof value !== 'number') {
             throw new Error('Not a number');
         }
     });
@@ -845,7 +845,7 @@ exports.numberArray = function (options) {
     };
     prependValidator(options, function (doc, value) {
         for (var i = 0, len = value.length; i < len; i++) {
-            if (isNaN(value[i])) {
+            if (isNaN(value[i]) || typeof value[i] !== 'number') {
                 throw new Error('Not a number');
             }
         }
