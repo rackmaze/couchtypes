@@ -243,7 +243,13 @@ Embedded.prototype.validate = function (doc, value, raw) {
     // don't validate empty fields, but check if required
     if (this.isEmpty(value, raw)) {
         if (this.required) {
-            return [ new Error('Required field') ];
+            if(_.isFunction(this.required)) {
+                if(this.required(doc, value, raw)) {
+                    return [ new Error('Required field') ];
+                }
+            } else {
+                return [ new Error('Required field') ];
+            }
         }
         return [];
     }
